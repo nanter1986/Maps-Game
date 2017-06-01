@@ -1,6 +1,7 @@
 
 var panorama;
-
+var found=[];
+var audio=new Audio("sound/tad.m4a");
 function streetViewMy() {
     panorama = new google.maps.StreetViewPanorama(
         document.getElementById('pano'), {
@@ -16,46 +17,60 @@ function streetViewMy() {
             panControl:false,
             addressControl:false
         });
-
-        console.log("str view");
+    panorama.position_changed=function(){
+        recalculate();
+        console.log("position changed");
     }
-
-function recalculate() {
-    var found=[];
-    document.getElementById("textInfo").innerHTML=panorama.location.description+"<br>"+"here: "+panorama.position+"<br>heading:"+panorama.getPov().heading+"<br>pitch:"+panorama.getPov().pitch;
-    console.log("here: "+panorama.position+"___heading:"+panorama.getPov().heading+"___pitch:"+panorama.getPov().pitch);
-    var toRed=createRandomness();
     if(localStorage.getItem("foundArray",JSON.stringify())!=null){
         found=JSON.parse(localStorage.getItem("foundArray"));
         console.log("array found "+found);
     }
+    console.log("str view");
+}
 
-        if(toRed[0]>10){
+function recalculate() {
+
+    var existsAlready=false;
+    console.log("here: "+panorama.position+"___heading:"+panorama.getPov().heading+"___pitch:"+panorama.getPov().pitch);
+    var toRed=createRandomness();
+
+    document.getElementById("textInfo").innerHTML=panorama.location.description+"<br>"+"here: "+panorama.position+"<br>heading:"+panorama.getPov().heading+"<br>pitch:"+panorama.getPov().pitch+"<br>total found: "+found.length;
+
+        if(toRed[0]>30){
             document.getElementById("textInfo").style.background="green";
             console.log("nothing here");
-        }else if(found.length>0){
-            for(var i=0;i<found.length;i++){
-                if(found[i]==toRed[1]){
-                    console.log("already found");
-                }else{
+        }else{
+            if(found.length!=0){
+                for(var i=0;i<found.length;i++){
+                    if(found[i]==toRed[1]){
+                        document.getElementById("textInfo").style.background="green";
+                        existsAlready=true;
+                        console.log("already found");
+                    }
+                }
+                if(existsAlready==false){
                     document.getElementById("textInfo").style.background="red";
                     found.push(toRed[1]);
                     localStorage.setItem("foundArray",JSON.stringify(found));
                     console.log("found new.stringified and saved"+found);
+                    audio.play();
                 }
+            }else{
+                document.getElementById("textInfo").style.background="red";
+                found.push(toRed[1]);
+                localStorage.setItem("foundArray",JSON.stringify(found));
+                console.log("found new.stringified and saved"+found);
+                audio.play();
             }
-        }else{
-            document.getElementById("textInfo").style.background="red";
-            found.push(toRed[1]);
-            localStorage.setItem("foundArray",JSON.stringify(found));
-            console.log("found new.stringified and saved"+found);
+
         }
 
 
     //streetViewMy();
 }
 
-//setInterval(recalculate,100);
+
+
 
 function createRandomness() {
     var aLocalArray=[];
