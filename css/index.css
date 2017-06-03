@@ -23,3 +23,17 @@ html, body {
     margin: 0;
     padding: 0;
 }
+
+textInfo{
+    height: 50%;
+    width: 100%;
+    background: yellow;
+    float: top;
+}
+
+#imgInfo{
+    height: 50%;
+    width: 100%;
+    background: pink;
+    float: top;
+}

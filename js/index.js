@@ -38,18 +38,21 @@ function recalculate() {
 
         if(toRed[0]>30){
             document.getElementById("textInfo").style.background="green";
+            document.getElementById("imgInfo").src="img/black.jpg"
             console.log("nothing here");
-        }else{
+        }else if(toRed[0]>0){
             if(found.length!=0){
                 for(var i=0;i<found.length;i++){
                     if(found[i]==toRed[1]){
                         document.getElementById("textInfo").style.background="green";
+                        document.getElementById("imgInfo").src="img/black.jpg"
                         existsAlready=true;
                         console.log("already found");
                     }
                 }
                 if(existsAlready==false){
                     document.getElementById("textInfo").style.background="red";
+                    document.getElementById("imgInfo").src="img/potion.jpg"
                     found.push(toRed[1]);
                     localStorage.setItem("foundArray",JSON.stringify(found));
                     console.log("found new.stringified and saved"+found);
@@ -57,6 +60,7 @@ function recalculate() {
                 }
             }else{
                 document.getElementById("textInfo").style.background="red";
+                document.getElementById("imgInfo").src="img/potion.jpg"
                 found.push(toRed[1]);
                 localStorage.setItem("foundArray",JSON.stringify(found));
                 console.log("found new.stringified and saved"+found);
