@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="initial-scale=1.0">
+    <title>Battle Screen</title>
+    <link href="css/battleScreen.css" rel="stylesheet">
+
+</head>
+<body onload="battleLoader()">
+    <div id="monsterImageCont">
+        <img src="img/threeHeaded.jpg" id="monsterImage" alt="three headed beast">
+    </div>
+    <div id="information">
+        <div id="textInfo">
+            <div id="battleStats">
+                <div id="monsterStats">
+                    Monster stats here!
+                </div>
+                <div id="playerStats">
+                    Player stats here!
+                </div>
+            </div>
+            <div id="commentary">
+                Commentary goes here!
+            </div>
+        </div>
+        <div id="buttons">
+            <img src="img/sword.jpg" alt="sword" id="swordButton" class="controlB" onclick="swordClick()">
+            <img src="img/shield.png" alt="sword" id="shieldButton" class="controlB" onclick="shieldClick()">
+            <img src="img/potion.jpg" alt="sword" id="potionButton" class="controlB" onclick="potionClick()">
+        </div>
+    </div>
+
+    <script src="js/battleScreen.js"></script>
+</body>
+</html>

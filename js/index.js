@@ -56,7 +56,10 @@ function recalculate() {
     "<br>shield found: "+shield.length+
     "<br>potion found: "+potion.length;
 
-        if(toRed[0]>30){
+        if(toRed[0]>80){
+            localStorage.setItem("currentMonster","chimera");
+            window.location.href="battleScreen.html";
+        }else if(toRed[0]>30){
             document.getElementById("textInfo").style.background="green";
             document.getElementById("imgInfo").src="img/black.jpg"
             console.log("nothing here");
