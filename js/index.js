@@ -3,6 +3,7 @@ var panorama;
 var sword=[];
 var shield=[];
 var potion=[];
+var beastEncounters=[];
 var audio=new Audio("sound/tad.m4a");
 function streetViewMy() {
     var curLoc;
@@ -26,39 +27,43 @@ function streetViewMy() {
             panControl:false,
             addressControl:false
         });
-    panorama.position_changed=function(){
-        recalculate();
-        console.log("position changed");
+        panorama.position_changed=function(){
+            recalculate();
+            console.log("position changed");
+        }
+        if(localStorage.getItem("swordFound")!=null){
+            sword=JSON.parse(localStorage.getItem("swordFound"));
+            console.log("sword array found "+sword);
+        }
+        if(localStorage.getItem("shieldFound")!=null){
+            shield=JSON.parse(localStorage.getItem("shieldFound"));
+            console.log("shield array found "+shield);
+        }
+        if(localStorage.getItem("potionFound")!=null){
+            potion=JSON.parse(localStorage.getItem("potionFound"));
+            console.log("potion array found "+potion);
+        }
+        if(localStorage.getItem("beastEncounters")!=null){
+            beastEncounters=JSON.parse(localStorage.getItem("beastEncounters"));
+            console.log("beast Encounters array found "+beastEncounters);
+        }
+        console.log("str view ready!");
     }
-    if(localStorage.getItem("swordFound",JSON.stringify())!=null){
-        sword=JSON.parse(localStorage.getItem("swordFound"));
-        console.log("sword array found "+sword);
-    }
-    if(localStorage.getItem("shieldFound",JSON.stringify())!=null){
-        shield=JSON.parse(localStorage.getItem("shieldFound"));
-        console.log("shield array found "+shield);
-    }
-    if(localStorage.getItem("potionFound",JSON.stringify())!=null){
-        potion=JSON.parse(localStorage.getItem("potionFound"));
-        console.log("potion array found "+potion);
-    }
-    console.log("str view ready!");
-}
 
-function recalculate() {
+    function recalculate() {
 
-    var existsAlready=false;
-    console.log("here: "+panorama.position+"___heading:"+panorama.getPov().heading+"___pitch:"+panorama.getPov().pitch);
-    var toRed=createRandomness();
+        var existsAlready=false;
+        console.log("here: "+panorama.position+"___heading:"+panorama.getPov().heading+"___pitch:"+panorama.getPov().pitch);
+        var toRed=createRandomness();
 
-    document.getElementById("textInfo").innerHTML=panorama.location.description+"<br>"+"here: "+panorama.position+"<br>heading:"+panorama.getPov().heading+"<br>pitch:"+panorama.getPov().pitch+
-    "<br>sword found: "+sword.length+
-    "<br>shield found: "+shield.length+
-    "<br>potion found: "+potion.length;
+        document.getElementById("textInfo").innerHTML=panorama.location.description+"<br>"+"here: "+panorama.position+"<br>heading:"+panorama.getPov().heading+"<br>pitch:"+panorama.getPov().pitch+
+        "<br>sword found: "+sword.length+
+        "<br>shield found: "+shield.length+
+        "<br>potion found: "+potion.length;
 
         if(toRed[0]>80){
-            localStorage.setItem("currentMonster","chimera");
-            window.location.href="battleScreen.html";
+            proccessEncounter(beastEncounters,toRed,"beastsEncountered");
+
         }else if(toRed[0]>30){
             document.getElementById("textInfo").style.background="green";
             document.getElementById("imgInfo").src="img/black.jpg"
@@ -75,21 +80,55 @@ function recalculate() {
         }
         localStorage.setItem("currentLocation",JSON.stringify(panorama.position));
 
-    //streetViewMy();
-}
+        //streetViewMy();
+    }
 
-function selectFoundItem(array,toRed,localStorageName,photoFileName){
-    var existsAlready=false;
-    if(array.length!=0){
-        for(var i=0;i<array.length;i++){
-            if(array[i]==toRed[1]){
-                document.getElementById("textInfo").style.background="green";
-                document.getElementById("imgInfo").src="img/black.jpg"
-                existsAlready=true;
-                console.log("already found");
+    function proccessEncounter(beastEncounters,toRed) {
+        var existsAlready=false;
+        var nameAndId=[];
+        if(beastEncounters.length!=0){
+            for(var i=0;i<beastEncounters.length;i++){
+                if(beastEncounters[i]==toRed[1]){
+                    document.getElementById("textInfo").style.background="green";
+                    document.getElementById("imgInfo").src="img/black.jpg"
+                    existsAlready=true;
+                    console.log("already found that beast");
+                }
             }
         }
         if(existsAlready==false){
+            nameAndId.push("chimera");
+            nameAndId.push(toRed[1]);
+            localStorage.setItem("currentMonster",JSON.stringify(nameAndId));
+            console.log("Beast Encounter "+nameAndId[0]+" "+nameAndId[1]);
+            setTimeout(function(){
+                window.location.href="battleScreen.html";
+            },2000);
+        }
+
+
+    }
+
+    function selectFoundItem(array,toRed,localStorageName,photoFileName){
+        var existsAlready=false;
+        if(array.length!=0){
+            for(var i=0;i<array.length;i++){
+                if(array[i]==toRed[1]){
+                    document.getElementById("textInfo").style.background="green";
+                    document.getElementById("imgInfo").src="img/black.jpg"
+                    existsAlready=true;
+                    console.log("already found");
+                }
+            }
+            if(existsAlready==false){
+                document.getElementById("textInfo").style.background="red";
+                document.getElementById("imgInfo").src="img/"+photoFileName;
+                array.push(toRed[1]);
+                localStorage.setItem(localStorageName,JSON.stringify(array));
+                console.log("found new.stringified and saved"+array);
+                audio.play();
+            }
+        }else{
             document.getElementById("textInfo").style.background="red";
             document.getElementById("imgInfo").src="img/"+photoFileName;
             array.push(toRed[1]);
@@ -97,26 +136,18 @@ function selectFoundItem(array,toRed,localStorageName,photoFileName){
             console.log("found new.stringified and saved"+array);
             audio.play();
         }
-    }else{
-        document.getElementById("textInfo").style.background="red";
-        document.getElementById("imgInfo").src="img/"+photoFileName;
-        array.push(toRed[1]);
-        localStorage.setItem(localStorageName,JSON.stringify(array));
-        console.log("found new.stringified and saved"+array);
-        audio.play();
     }
-}
 
 
-function createRandomness() {
-    var aLocalArray=[];
-    var num1=100000*(panorama.position.lng()+panorama.position.lat());
-    num1=Math.floor(num1);
-    console.log(num1);
-    var theString=""+num1
-    var key1=Number(theString[theString.length-2]+theString[theString.length-1]);
-    console.log(key1);
-    aLocalArray[0]=key1;
-    aLocalArray[1]=num1;
-    return aLocalArray;
-}
+    function createRandomness() {
+        var aLocalArray=[];
+        var num1=100000*(panorama.position.lng()+panorama.position.lat());
+        num1=Math.floor(num1);
+        console.log(num1);
+        var theString=""+num1
+        var key1=Number(theString[theString.length-2]+theString[theString.length-1]);
+        console.log(key1);
+        aLocalArray[0]=key1;
+        aLocalArray[1]=num1;
+        return aLocalArray;
+    }
