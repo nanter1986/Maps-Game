@@ -71,7 +71,13 @@ function potionClick() {
 function winCondition(){
     if(player1.health<=0){
         gameRunning=false;
+        var curLoc={lat: 35.50915947260658, lng: 24.022094434738168};
+        localStorage.setItem("currentLocation",JSON.stringify(curLoc));
         writeCommentary("You lost!");
+        setTimeout(function(){
+            window.location.href="index.html";
+        },2000);
+
     }else if(monster1.health<=0){
         gameRunning=false;
         writeCommentary("You won!");
@@ -80,15 +86,18 @@ function winCondition(){
 }
 
 function saveData(){
-    if(JSON.parse(localStorage.getItem("beastEncounters"))==null){
-        var beastEncounters=[];
+    var beastEncounters=[];
+    if(JSON.parse(localStorage.getItem("beastsEncountered"))==null){
         beastEncounters.push(monster1.id);
         localStorage.setItem("beastsEncountered",JSON.stringify(beastEncounters));
     }else{
-        var beastEncounters=JSON.parse(localStorage.getItem("beastEncounters"));
-        beastEncounters.push()
+        beastEncounters=JSON.parse(localStorage.getItem("beastsEncountered"));
+        console.log(beastEncounters);
+        beastEncounters.push(monster1.id);
         localStorage.setItem("beastsEncountered",JSON.stringify(beastEncounters));
+        console.log(beastEncounters);
     }
+    localStorage.setItem("potionAvailable",player1.potion.size);
     window.location.href="index.html";
 }
 
@@ -121,7 +130,7 @@ function makePlayer(){
     if(sh==undefined){
         sh=[];
     }
-    var pot=JSON.parse(localStorage.getItem("potionFound"));
+    var pot=localStorage.getItem("potionAvailable");
     if(pot==undefined){
         pot=[];
     }
